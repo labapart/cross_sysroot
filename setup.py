@@ -43,6 +43,9 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/labapart/cross_sysroot",
     packages=find_packages(),
+    package_data={
+        '': ['requirements.txt'],
+    },
     entry_points={
         'console_scripts': [
             'cross-sysroot=cross_sysroot:cross_sysroot',
