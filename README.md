@@ -7,6 +7,8 @@ The tool will solve package dependencies and extract them into a given `sysroot`
 
 The generated `sysroot` can be used as an argument for the toolchain command line argument `--sysroot=`
 
+* To install the utility: `pip3 install cross-sysroot`
+
 * Command usage:
 
 ```
