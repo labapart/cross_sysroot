@@ -1,0 +1,4 @@
+libbluetooth-dev
+libglib2.0-dev
+libpcre3
+libssl-dev

@@ -1,0 +1,30 @@
+dist: xenial
+language: python
+python:
+  - '2.7'
+  - '3.4'
+  - '3.5'
+  - '3.6'
+  - pypy3.5
+
+addons:
+  apt:
+    packages:
+      - python-setuptools
+      - pylint3
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - PYTHONPATH=$PWD pytest
+  - pylint3 --disable=invalid-name,missing-docstring,fixme,no-name-in-module cross_sysroot
+  - python3 setup.py sdist bdist_wheel || python setup.py sdist bdist_wheel
+
+deploy:
+  provider: pypi
+  user: oliviermartin
+  password:
+    secure: lxeEr0pUSmO+5kv9LhVSo+y65G+LYAh9nuXjcA6MMvLkK9LaY+BIC3LAPhaki1pBgFBiJANmLJeYIUEijCtKwTKT3vAIMncMwOCTBb+i+OLe8/r49YZQ7Hsz3xpPG0l9KgtsE3Ti3I0eG/tBKKjbusa90ouBSRZttgnf0cbiL9LfveUWCOqu/CKRAJGt1hQAlTHKMpRHNpNxhulh8va7Gldj/vzjPfiHDTXKIr47MOrNALB9b+PCpLUx4CiXnQESVe2kAGvyqukQBbD9JL86dCtFGaDOKrcyVqjkd75klrqz+jC0Bfv4To+ugwTGjOB0U4f9ZfRLoK8P7/SSBSyvUa+poU8txWBGpDCq5MHR1wghVRUralc7TtBSxWkB49q6FI4pkIG+lyiWl8d0NPPMqTD90p0BT9Ok5cvgvr0x2mZ0z9FwP3eE/Yut92gdrobv/YudeQwJNPOxujvzVh8CzTWsoyIcV5LbZIwwNDxNBL/7M7AIbAK6lemNTbwR6hh2JScYxXRBEP2NwOXjJtFGPXnh7Za4NgMj+4YFOjbJ58FVgDuj6CcDtuTmxtJrhwnZc2JuV5CS/Hy0HVjpUS9vMZvGlUw27lkvKBeqptt6luUKelRess1hl30Y90MF1CtcwKd5peq8ZyraQYykauh+UwkupOVCp8hNvojyXLQDNa0=
+  on:
+    tags: true
