@@ -15,7 +15,7 @@ addons:
       - pylint3
 
 install:
-  - pip install -r requirements.txt
+  - pip install pysqlite3
 
 script:
   - PYTHONPATH=$PWD pytest

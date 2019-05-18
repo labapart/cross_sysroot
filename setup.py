@@ -14,22 +14,6 @@ if 'TRAVIS_TAG' in os.environ:
 elif 'TRAVIS_BUILD_ID' in os.environ:
     git_version = os.environ['TRAVIS_BUILD_ID'] + '-' + git_version
 
-
-def get_requirements(with_link=False):
-    list_req = []
-    with open('requirements.txt') as f:
-        requirements = f.read().splitlines()
-        for req in requirements:
-            if req.startswith("git+"):
-                if with_link:
-                    list_req.append(req)
-            else:
-                if not with_link:
-                    list_req.append(req)
-
-    return list_req
-
-
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
@@ -42,16 +26,10 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/labapart/cross_sysroot",
-    packages=find_packages(),
-    package_data={
-        '': ['requirements.txt'],
-    },
-    include_package_data=True,
+    install_requires=['pysqlite3'],
     entry_points={
         'console_scripts': [
             'cross-sysroot=cross_sysroot.__main__:main',
         ],
     },
-    install_requires=get_requirements(with_link=False),
-    dependency_links=get_requirements(with_link=True),
 )
