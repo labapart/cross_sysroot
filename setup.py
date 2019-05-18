@@ -49,7 +49,7 @@ setup(
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'cross-sysroot=cross_sysroot:cross_sysroot',
+            'cross-sysroot=cross_sysroot.__main__:main',
         ],
     },
     install_requires=get_requirements(with_link=False),
