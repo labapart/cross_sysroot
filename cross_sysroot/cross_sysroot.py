@@ -20,7 +20,7 @@ def parse_args(command_line=None):
                                      description='Build package list for Linux Distribution.')
     parser.add_argument('--version', action='version', version=pkg_version)
     parser.add_argument('--verbose', action='store_true', help='Verbose mode')
-    parser.add_argument('--distribution', choices=['debian', 'ubuntu'],
+    parser.add_argument('--distribution', choices=['debian', 'ubuntu', 'raspbian'],
                         help='Linux distribution')
     parser.add_argument('--distribution-version', type=str, required='--distribution' in sys.argv,
                         help='Linux distribution')
@@ -56,6 +56,8 @@ def main(args):
             args.distribution_url = "http://ftp.uk.debian.org/debian/"
         elif args.distribution == "ubuntu":
             args.distribution_url = "http://gb.archive.ubuntu.com/ubuntu/"
+        elif args.distribution == "raspbian":
+            args.distribution_url = "http://archive.raspbian.org/raspbian/"
 
     if not os.path.isdir(args.build_root):
         os.makedirs(args.build_root)
