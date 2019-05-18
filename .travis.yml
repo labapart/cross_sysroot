@@ -20,7 +20,10 @@ script:
   - PYTHONPATH=$PWD pytest
   - pylint3 --disable=invalid-name,missing-docstring,fixme,no-name-in-module cross_sysroot
   - python3 setup.py sdist bdist_wheel || python setup.py sdist bdist_wheel
+  # Install the package
   - pip install .
+  # Try to run it
+  - cross-sysroot --help
 
 deploy:
   provider: pypi

@@ -30,15 +30,16 @@ def parse_args(command_line=None):
 
 
 def main(args):
+    logger = logging.getLogger()
+    ch = logging.StreamHandler()
+    logger.addHandler(ch)
+    # create formatter and add it to the handlers
+    formatter = logging.Formatter('%(levelname)s: %(message)s')
+    ch.setFormatter(formatter)
+
     if args.verbose:
-        logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
-        ch = logging.StreamHandler()
         ch.setLevel(logging.DEBUG)
-        # create formatter and add it to the handlers
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        ch.setFormatter(formatter)
-        logger.addHandler(ch)
 
     # Use default distribution URL if not specified
     if args.distribution_url is None:

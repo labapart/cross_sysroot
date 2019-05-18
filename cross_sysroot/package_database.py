@@ -184,7 +184,7 @@ def resolve_dependencies(args, sql_conn):
         if '|' in dependency:
             unresolved_dependencies = dependency.split('|')
             logger.warning("Unresolved dependency '%s'. We choose '%s'",
-                           dependency, unresolved_dependencies[0].strip())
+                           dependency.strip(), unresolved_dependencies[0].strip())
             for unresolved_dependency in unresolved_dependencies:
                 try:
                     add_package_from_str(args, sql_conn, unresolved_dependency)
