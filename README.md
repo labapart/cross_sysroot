@@ -12,7 +12,7 @@ The generated `sysroot` can be used as an argument for the toolchain command lin
 * Command usage:
 
 ```
-usage: cross-sysroot [-h] [--verbose] --distribution {debian,ubuntu}
+usage: cross-sysroot [-h] [--verbose] --distribution {debian,ubuntu,raspbian}
                   --distribution-version DISTRIBUTION_VERSION
                   [--distribution-url DISTRIBUTION_URL] --architecture
                   {amd64,arm64,armhf,armel} --build-root BUILD_ROOT
@@ -27,7 +27,7 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   --verbose             Verbose mode
-  --distribution {debian,ubuntu}
+  --distribution {debian,ubuntu, raspbian}
                         Linux distribution
   --distribution-version DISTRIBUTION_VERSION
                         Linux distribution
@@ -48,7 +48,7 @@ cross-sysroot --distribution debian --distribution-version stable --architecture
 Notes about Development/CI
 ==========================
 
-* Launch the python application from source tree: `PYTHONPATH=$PWD python3 -m cross_sysroot --help`
+* Launch the python application from source tree: `PYTHONPATH=$PWD python3 -m cross_sysroot.cross_sysroot --help`
 
 * Generate a new PIP package
 
