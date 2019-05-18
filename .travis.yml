@@ -5,7 +5,8 @@ python:
   - '3.4'
   - '3.5'
   - '3.6'
-  - pypy3.5
+  # Raised the error: "pkg_resources.DistributionNotFound: The 'pysqlite3' distribution was not found and is required by cross-sysroot" when launching the app
+  #- pypy3.5
 
 addons:
   apt:
