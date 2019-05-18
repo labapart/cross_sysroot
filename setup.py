@@ -46,6 +46,7 @@ setup(
     package_data={
         '': ['requirements.txt'],
     },
+    include_package_data=True,
     entry_points={
         'console_scripts': [
             'cross-sysroot=cross_sysroot:cross_sysroot',
