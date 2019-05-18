@@ -7,7 +7,7 @@ import sys
 
 import pkg_resources
 
-from . import package_database
+from . import package_database, fixup_sysroot
 
 try:
     pkg_version = pkg_resources.require("biosency-final-test")[0].version
@@ -79,6 +79,9 @@ def main(args):
 
     # Install all packages
     package_database.download_packages(args)
+
+    # Fix symbolic link
+    fixup_sysroot.fixup_sysroot(args.build_root)
 
 
 def command_line_entrypoint():
