@@ -3,22 +3,31 @@
 import argparse
 import logging
 import os
+import sys
+
+import pkg_resources
 
 from . import package_database
+
+try:
+    pkg_version = pkg_resources.require("biosency-final-test")[0].version
+except pkg_resources.ResolutionError:
+    pkg_version = "Unknown Version"
 
 
 def parse_args(command_line=None):
     parser = argparse.ArgumentParser(prog="cross-sysroot",
                                      description='Build package list for Linux Distribution.')
+    parser.add_argument('--version', action='version', version=pkg_version)
     parser.add_argument('--verbose', action='store_true', help='Verbose mode')
-    parser.add_argument('--distribution', choices=['debian', 'ubuntu'], required=True,
+    parser.add_argument('--distribution', choices=['debian', 'ubuntu'],
                         help='Linux distribution')
-    parser.add_argument('--distribution-version', type=str, required=True,
+    parser.add_argument('--distribution-version', type=str, required='--distribution' in sys.argv,
                         help='Linux distribution')
     parser.add_argument('--distribution-url', type=str, help='Linux distribution URL')
     parser.add_argument('--architecture', choices=['amd64', 'arm64', 'armhf', 'armel'],
-                        required=True, help='CPU Architecture')
-    parser.add_argument('--build-root', type=str, required=True,
+                        required='--distribution' in sys.argv, help='CPU Architecture')
+    parser.add_argument('--build-root', type=str, required='--distribution' in sys.argv,
                         help='Location to store the Linux Distribution package.')
     parser.add_argument('package_list_file', type=str,
                         help='File containing the list of packages (and their versions)')
@@ -68,3 +77,15 @@ def main(args):
 
     # Install all packages
     package_database.download_packages(args)
+
+
+def command_line_entrypoint():
+    command_line_args = parse_args()
+    try:
+        main(command_line_args)
+    except package_database.PackageNotFound as e:
+        logging.error("Package not found: %s", e.package_name)
+
+
+if __name__ == '__main__':
+    command_line_entrypoint()

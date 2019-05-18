@@ -26,10 +26,11 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/labapart/cross_sysroot",
-    install_requires=['pysqlite3'],
+    packages=find_packages(),
+    install_requires=['setuptools', 'pysqlite3'],
     entry_points={
         'console_scripts': [
-            'cross-sysroot=cross_sysroot.__main__:main',
+            'cross-sysroot=cross_sysroot.cross_sysroot:command_line_entrypoint',
         ],
     },
 )
