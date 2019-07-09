@@ -7,7 +7,7 @@ import sys
 
 import pkg_resources
 
-from . import package_database, fixup_sysroot
+from . import package_database, fixup_sysroot, cross_gcc
 
 try:
     pkg_version = pkg_resources.require("biosency-final-test")[0].version
@@ -29,6 +29,9 @@ def parse_args(command_line=None):
                         required='--distribution' in sys.argv, help='CPU Architecture')
     parser.add_argument('--build-root', type=str, required='--distribution' in sys.argv,
                         help='Location to store the Linux Distribution package.')
+    parser.add_argument('--cross-gcc', type=str, default=None,
+                        help='GCC Path used to build the cross application. \
+                            When set, all GCC sysroot files are copied into the sysroot.')
     parser.add_argument('package_list_file', type=str,
                         help='File containing the list of packages (and their versions)')
 
@@ -61,6 +64,9 @@ def main(args):
 
     if not os.path.isdir(args.build_root):
         os.makedirs(args.build_root)
+
+    if args.cross_gcc:
+        cross_gcc.copy_sysroot(args)
 
     # Load distribution database
     sql_conn = package_database.load_distribution_database(args)

@@ -37,12 +37,22 @@ optional arguments:
                         CPU Architecture
   --build-root BUILD_ROOT
                         Location to store the Linux Distribution package.
+  --cross-gcc CROSS_GCC
+                        GCC Path used to build the cross application. When
+                        set, all GCC sysroot files are copied into the
+                        sysroot.
 ```
 
-* Example:
+* Example 1:
 
 ```
 cross-sysroot --distribution debian --distribution-version stable --architecture arm64 --build-root /tmp/cross-sysroot tests/requirements-debian-jessie-arm64.txt
+```
+
+* Example 2: Considering `CROSS_COMPILE` environment variable points to your cross-compilation toolchain:
+
+```
+cross-sysroot --distribution debian --distribution-version stable --architecture arm64 --build-root /tmp/cross-sysroot --cross-gcc ${CROSS_COMPILE}gcc tests/requirements-debian-jessie-arm64.txt
 ```
 
 Notes about Development/CI
