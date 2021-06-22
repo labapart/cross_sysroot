@@ -1,0 +1,29 @@
+name: cross-root
+on: [push]
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt install python-setuptools pylint3
+      - run: pip3 install setuptools pysqlite3
+      - run: pylint cross_sysroot
+
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: pip install pytest
+      - run: pip install setuptools pysqlite3
+      - run: PYTHONPATH=$PWD pytest
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: pip install setuptools pysqlite3
+      - run: python3 setup.py sdist bdist_wheel || python setup.py sdist bdist_wheel
+      # Install the package
+      - run: pip install .
+      # Try to run it
+      - run: cross-sysroot --help
