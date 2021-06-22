@@ -1,0 +1,25 @@
+inputs:
+  distribution:
+    description: 'Linux distribution'
+    required: true
+    default: '1'
+  distribution_version:
+    description: 'Version of the Linux distribution'
+    required: true
+  architecture:
+    description: 'CPU architecture'
+    required: true
+  build_root:
+    description: 'Directory with the distribution packages should be unpacked'
+    required: true
+  package_requirements:
+    description: 'File containing the list of packages to install'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: python -m pip install setuptools pysqlite3  # Installing dependencies
+      shell: bash
+    - run: python ${{ github.action_path }}/cross_sysroot.cross_sysroot.py --distribution ${{ inputs.distribution }} --distribution-version ${{ inputs.distribution_version }} --architecture ${{ inputs.architecture }} --build-root ${{ inputs.build_root }} ${{ inputs.package_requirements }}
+      shell: bash
