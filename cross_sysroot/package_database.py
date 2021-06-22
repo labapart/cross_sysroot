@@ -1,3 +1,5 @@
+"""Link package name and version to their entry in the Linux distribution database."""
+
 from enum import Enum
 import gzip
 import logging
@@ -14,15 +16,16 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 # Contain list of package to download
-m_packages_to_install = {}
+PACKAGES_TO_INSTALL = {}
 
 # Dependencies to resolve
-m_dependencies_to_resolve = []
+DEPENDENCIES_TO_RESOLVE = []
 
-package_version_regex = re.compile(r'(\S+) \((\S+) (\S+)\)')
+PACKAGE_VERSION_REGEX = re.compile(r'(\S+) \((\S+) (\S+)\)')
 
 
 class PackageVersion(Enum):
+    """Define the package version requirement."""
     NONE = 0
     EQUAL = 1
     LESS_THAN = 2
@@ -32,6 +35,7 @@ class PackageVersion(Enum):
 
 
 class PackageNotFound(Exception):
+    """Package Not Found exception."""
 
     def __init__(self, package_name):
         super(PackageNotFound, self).__init__(package_name)
@@ -39,8 +43,9 @@ class PackageNotFound(Exception):
 
 
 def load_distribution_database(args):
+    """Load Linux distribution package database."""
     # Re-initialize list of packages to install
-    m_packages_to_install.clear()
+    PACKAGES_TO_INSTALL.clear()
 
     #
     # Create Database
@@ -101,6 +106,7 @@ def load_distribution_database(args):
 
 
 def list_similar_package_name(sql_conn, package_name):
+    """Return a list of package names that are similar to the given one."""
     sql_cur = sql_conn.cursor()
 
     logger.info("Look for similar package to '%s'", package_name)
@@ -112,6 +118,7 @@ def list_similar_package_name(sql_conn, package_name):
 
 
 def add_package_dependencies(args, sql_conn, dependencies_str):
+    """Parse and add package dependencies."""
     logger.debug("Dependencies: %s", dependencies_str)
 
     dependencies = dependencies_str.split(',')
@@ -121,17 +128,18 @@ def add_package_dependencies(args, sql_conn, dependencies_str):
         # Check if the dependency contains '|', in this case we consider it as a
         # complex dependency that would solve later
         if '|' in dependency:
-            m_dependencies_to_resolve.append(dependency)
+            DEPENDENCIES_TO_RESOLVE.append(dependency)
         else:
             add_package_from_str(args, sql_conn, dependency)
 
 
 def add_package_from_str(args, sql_conn, package_str):
+    """Add package from a string (that might include its version)."""
     # Remove leading and trailing whitespace
     package_str = package_str.strip()
 
     # Check if depdency contains a version number
-    result = package_version_regex.findall(package_str)
+    result = PACKAGE_VERSION_REGEX.findall(package_str)
 
     if result:
         # In case there is a version
@@ -145,11 +153,12 @@ def add_package_from_str(args, sql_conn, package_str):
 
 
 def add_package(args, sql_conn, package_name, version=None, version_type=PackageVersion.NONE):
+    """Add package following its version requirement."""
     # TODO: FixMe: For now we strip ':any' from the name
     package_name = package_name.replace(':any', '')
 
     # Check if the package is not already in the list
-    if package_name in m_packages_to_install:
+    if package_name in PACKAGES_TO_INSTALL:
         return
 
     sql_cur = sql_conn.cursor()
@@ -160,11 +169,11 @@ def add_package(args, sql_conn, package_name, version=None, version_type=Package
     package_info = sql_cur.fetchone()
 
     if package_info:
-        m_packages_to_install[package_name] = {"name": package_name, "filename": package_info[0]}
+        PACKAGES_TO_INSTALL[package_name] = {"name": package_name, "filename": package_info[0]}
 
         if version:
-            m_packages_to_install[package_name]['version'] = version
-            m_packages_to_install[package_name]['version_type'] = version_type
+            PACKAGES_TO_INSTALL[package_name]['version'] = version
+            PACKAGES_TO_INSTALL[package_name]['version_type'] = version_type
 
         dependencies = package_info[1]
         if dependencies:
@@ -180,7 +189,8 @@ def add_package(args, sql_conn, package_name, version=None, version_type=Package
 
 
 def resolve_dependencies(args, sql_conn):
-    for dependency in m_dependencies_to_resolve:
+    """Resolve package dependencies."""
+    for dependency in DEPENDENCIES_TO_RESOLVE:
         if '|' in dependency:
             unresolved_dependencies = dependency.split('|')
             logger.warning("Unresolved dependency '%s'. We choose '%s'",
@@ -198,6 +208,7 @@ def resolve_dependencies(args, sql_conn):
 
 
 def download_package(args, local_packages_root, package):
+    """Download a given package from Linux distribution repository."""
     package_file = os.path.join(local_packages_root, package['name'] + '.deb')
     package_url = args.distribution_url + package['filename']
     logger.info("Download package %s", package_file)
@@ -206,11 +217,12 @@ def download_package(args, local_packages_root, package):
 
 
 def download_packages(args):
+    """Download packages listed in the requirement files from Linux distribution repository."""
     local_packages_root = os.path.join(args.build_root, "packages")
     try:
         os.makedirs(local_packages_root)
     except OSError:  # In case the directory already exists
         pass
 
-    for package in m_packages_to_install.values():
+    for package in PACKAGES_TO_INSTALL.values():
         download_package(args, local_packages_root, package)

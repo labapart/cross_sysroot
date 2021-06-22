@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Entrypoint file for 'cross_sysroot' module."""
+
 import argparse
 import logging
 import os
@@ -10,15 +12,16 @@ import pkg_resources
 from . import package_database, fixup_sysroot, cross_gcc
 
 try:
-    pkg_version = pkg_resources.require("biosency-final-test")[0].version
+    PKG_VERSION = pkg_resources.require("biosency-final-test")[0].version
 except pkg_resources.ResolutionError:
-    pkg_version = "Unknown Version"
+    PKG_VERSION = "Unknown Version"
 
 
 def parse_args(command_line=None):
+    """Parse command line arguments."""
     parser = argparse.ArgumentParser(prog="cross-sysroot",
                                      description='Build package list for Linux Distribution.')
-    parser.add_argument('--version', action='version', version=pkg_version)
+    parser.add_argument('--version', action='version', version=PKG_VERSION)
     parser.add_argument('--verbose', action='store_true', help='Verbose mode')
     parser.add_argument('--distribution', choices=['debian', 'ubuntu', 'raspbian'],
                         help='Linux distribution')
@@ -42,16 +45,17 @@ def parse_args(command_line=None):
 
 
 def main(args):
+    """Main function for cross-sysroot python module."""
     logger = logging.getLogger()
-    ch = logging.StreamHandler()
-    logger.addHandler(ch)
+    console_handler = logging.StreamHandler()
+    logger.addHandler(console_handler)
     # create formatter and add it to the handlers
     formatter = logging.Formatter('%(levelname)s: %(message)s')
-    ch.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
 
     if args.verbose:
         logger.setLevel(logging.DEBUG)
-        ch.setLevel(logging.DEBUG)
+        console_handler.setLevel(logging.DEBUG)
 
     # Use default distribution URL if not specified
     if args.distribution_url is None:
@@ -91,11 +95,12 @@ def main(args):
 
 
 def command_line_entrypoint():
+    """Command line entrypoint."""
     command_line_args = parse_args()
     try:
         main(command_line_args)
-    except package_database.PackageNotFound as e:
-        logging.error("Package not found: %s", e.package_name)
+    except package_database.PackageNotFound as exception:
+        logging.error("Package not found: %s", exception.package_name)
 
 
 if __name__ == '__main__':

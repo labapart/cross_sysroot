@@ -1,3 +1,5 @@
+"""Copy GCC cross-compiler sysroot into sysroot directory."""
+
 import logging
 import os
 import shutil
@@ -7,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def retrieve_gcc_sysroot(cross_gcc):
-    # Retrieve sysroot used to build GCC
+    """Retrieve sysroot used to build GCC."""
     p = subprocess.Popen([cross_gcc, '-v'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     _, err = p.communicate()
 
@@ -23,6 +25,7 @@ def retrieve_gcc_sysroot(cross_gcc):
 
 # From: https://stackoverflow.com/a/12514470/6267288
 def copytree(src, dst, symlinks=False, ignore=None):
+    """Recursively copy directory/files."""
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
@@ -33,6 +36,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 
 def copy_sysroot(args):
+    """Copy cross-compiler GCC sysroot into the sysroot directory."""
     gcc_sysroot = retrieve_gcc_sysroot(args.cross_gcc)
 
     gcc_fullpath = shutil.which(args.cross_gcc)
