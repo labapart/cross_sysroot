@@ -29,6 +29,7 @@ disable=
     unused-argument,
     fixme,
     notimplemented-raised,
+    no-else-raise,
     bad-super-call, # Not useful
     duplicate-code,
     bare-except, # Not useful
