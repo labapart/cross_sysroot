@@ -1,3 +1,5 @@
+"""Fix sysroot that might have broken symbolic link/reference."""
+
 import logging
 import os
 import re
@@ -8,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def fix_symbolic_link(root, path, file_path):
+    """Fix symbol link file that does point to an absolute address not valid in the context of sysroot."""
     if os.path.islink(file_path):
         linkto = os.readlink(file_path)
         linkto_fullpath = os.path.join(path, linkto)
@@ -24,6 +27,7 @@ def fix_symbolic_link(root, path, file_path):
 
 
 def patch_pkg_config(root, path, file_path):
+    """Patch package configuration file '.pc' to use the correct path."""
     # Remove unused argument
     del path
 
@@ -47,14 +51,14 @@ def patch_pkg_config(root, path, file_path):
         f.truncate()
 
 
-def fixup_sysroot(root):
-    # r=root, d=directories, f = files
-    for r, d, f in os.walk(root):
+def fixup_sysroot(sysroot):
+    """Fixup sysroot that might have broken symbolic link."""
+    for root, directories, files in os.walk(sysroot):
         # Remove unused argument
-        del d
+        del directories
 
-        for file in f:
-            file_path = os.path.join(r, file)
+        for file in files:
+            file_path = os.path.join(root, file)
 
-            fix_symbolic_link(root, r, file_path)
-            # patch_pkg_config(root, r, file_path)
+            fix_symbolic_link(sysroot, root, file_path)
+            # patch_pkg_config(sysroot, root, file_path)
