@@ -24,7 +24,7 @@ def retrieve_gcc_sysroot(cross_gcc):
 
 
 # From: https://stackoverflow.com/a/12514470/6267288
-def copytree(src, dst, symlinks=False, ignore=None):
+def copytree(src, dst, symlinks=True, ignore=None):
     """Recursively copy directory/files."""
     for item in os.listdir(src):
         s = os.path.join(src, item)

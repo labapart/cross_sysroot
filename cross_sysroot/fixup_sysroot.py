@@ -21,9 +21,9 @@ def fix_symbolic_link(root, path, file_path):
                 os.remove(file_path)
                 os.symlink(new_source, file_path)
             else:
-                logger.error("\tBROKEN-1:%s", new_source)
+                logger.warning("Could not fix symbolic link: %s", file_path)
         elif not os.path.isfile(linkto_fullpath):
-            logger.error("\tBROKEN-2: %s", linkto_fullpath)
+            logger.error("Could not fix symbolic link: %s -> %s", file_path, linkto_fullpath)
 
 
 def patch_pkg_config(root, path, file_path):
