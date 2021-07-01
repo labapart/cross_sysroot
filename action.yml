@@ -2,7 +2,6 @@ inputs:
   distribution:
     description: 'Linux distribution'
     required: true
-    default: '1'
   distribution_version:
     description: 'Version of the Linux distribution'
     required: true
@@ -15,11 +14,30 @@ inputs:
   package_requirements:
     description: 'File containing the list of packages to install'
     required: true
+  cross_gcc:
+    description: 'Define the GCC cross-compiler to use (its headers/libraries will be copied into build_root)'
+    required: false
 
 runs:
   using: "composite"
   steps:
     - run: python -m pip install setuptools pysqlite3  # Installing dependencies
       shell: bash
-    - run: PYTHONPATH=${{ github.action_path }}:$PYTHONPATH python -m cross_sysroot.cross_sysroot --distribution ${{ inputs.distribution }} --distribution-version ${{ inputs.distribution_version }} --architecture ${{ inputs.architecture }} --build-root ${{ inputs.build_root }} ${{ inputs.package_requirements }}
+    - name: Build cross-compilation directory
+      run: |
+        export PYTHONPATH=${{ github.action_path }}:$PYTHONPATH
+        ${{ inputs.cross_gcc == '' }} \
+          && python -m cross_sysroot.cross_sysroot \
+                 --distribution ${{ inputs.distribution }} \
+                 --distribution-version ${{ inputs.distribution_version }} \
+                 --architecture ${{ inputs.architecture }} \
+                 --build-root ${{ inputs.build_root }} \
+                 ${{ inputs.package_requirements }} \
+          || python -m cross_sysroot.cross_sysroot \
+                 --distribution ${{ inputs.distribution }} \
+                 --distribution-version ${{ inputs.distribution_version }} \
+                 --architecture ${{ inputs.architecture }} \
+                 --build-root ${{ inputs.build_root }} \
+                 --cross-gcc ${{ inputs.cross_gcc }} \
+                 ${{ inputs.package_requirements }}
       shell: bash
