@@ -28,7 +28,7 @@ jobs:
       # Try to run it
       - run: cross-sysroot --help
 
-  github_action:
+  test_github_action:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -39,3 +39,22 @@ jobs:
           architecture: arm64
           build_root: cross-sysroot-tmp
           package_requirements: tests/requirements-debian-jessie-arm64.txt
+
+  pypi_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6
+      - run: pip install setuptools pysqlite3
+      - name: Install pypa/build
+        run: python -m pip install build --user
+      - name: Build a binary wheel and a source tarball
+        run: python -m build --sdist --wheel --outdir dist/
+      - name: Publish distribution package to PyPI
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
